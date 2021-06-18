@@ -3,6 +3,4 @@ FILE(GLOB src_files src/*.cpp)
 add_executable(Worlds ${src_files}) 
 
 add_subdirectory(ext/glfw)
-
 link_libraries(Worlds glfw ${GLFW_LIBRARIES})
-

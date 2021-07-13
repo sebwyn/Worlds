@@ -17,34 +17,34 @@
 
 # A High-Level Overview:
 ### Core:
- - Window
- - Scene Renderer
- - Text Rendering
- - Input Handling
- - Camera
- - Scripting System
+ - [ ] Window
+ - [ ] Scene Renderer
+ - [ ] Text Rendering
+ - [ ] Input Handling
+ - [ ] Camera
+ - [ ] Scripting System
 
- - Hub-World Design and Logic
- - Context Switching (making a good loading system for assets and worlds)
+ - [ ] Hub-World Design and Logic
+ - [ ] Context Switching (making a good loading system for assets and worlds)
 
- - Audio System
+ - [ ] Audio System
 
 ### Machines and Art:
- - SDF Rendering
- - Lots of Post Processing Shaders
- - Voxel Renderer
- - Lighting System
+ - [ ] SDF Rendering
+ - [ ] Lots of Post Processing Shaders
+ - [ ] Voxel Renderer
+ - [ ] Lighting System
 
- - Terminal
- - Text Editor
- - Integrated Information System (touch anything and get information)
-    - Visualising data
+ - [ ] Terminal
+ - [ ] Text Editor
+ - [ ] Integrated Information System (touch anything and get information)
+   [ ]  - Visualising data
 
- - Audio Tools, and synths
- - Visual Synthesizers?
- - Deep Learning tools (visual scripting?)
+ - [ ] Audio Tools, and synths
+ - [ ] Visual Synthesizers?
+ - [ ] Deep Learning tools (visual scripting?)
 
- - Cellular Automata
+ - [ ] Cellular Automata
 
 ### Multiplayer:
 MULTIPLAYER, so I don't know what this means, because

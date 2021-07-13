@@ -14,5 +14,6 @@ find_package(Vulkan REQUIRED)
 include_directories(${Vulkan_INCLUDE_DIRS})
 
 add_subdirectory(ext/glfw)
+add_subdirectory(ext/glm)
 target_include_directories(Worlds PUBLIC ext/)
-target_link_libraries(Worlds glfw ${GLFW_LIBRARIES} ${Vulkan_LIBRARIES})
+target_link_libraries(Worlds glfw ${GLFW_LIBRARIES} ${Vulkan_LIBRARIES} glm)

@@ -1,19 +1,6 @@
-project(Worlds)
-
 cmake_minimum_required(VERSION 3.20)
+project(WorldsApp)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
-
-FILE(GLOB src_files src/*.cpp)
-
-add_executable(Worlds ${src_files}) 
-
-set_property(TARGET Worlds PROPERTY CXX_STANDARD 17)
-
-find_package(Vulkan REQUIRED)
-include_directories(${Vulkan_INCLUDE_DIRS})
-
-add_subdirectory(ext/glfw)
-add_subdirectory(ext/glm)
-target_include_directories(Worlds PUBLIC ext/)
-target_link_libraries(Worlds glfw ${GLFW_LIBRARIES} ${Vulkan_LIBRARIES} glm)
+add_subdirectory(Worlds)
+add_subdirectory(Sandbox)

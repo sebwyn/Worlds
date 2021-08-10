@@ -10,7 +10,7 @@ Application::Application() {
     m_window = Window::create(WindowProps());
     m_window->setEventCallback(W_BIND_EVENT_FN(Application::onEvent));
 
-    //m_renderAPI = RenderAPI::create(m_window->getNativeWindow());
+    m_renderAPI = RenderAPI::create(m_window->getNativeWindow());
 }
 
 void Application::onEvent(Event &e) {
@@ -25,7 +25,7 @@ void Application::close() { m_running = false; }
 
 void Application::run() {
     while (m_running) {
-        //m_renderAPI->draw();
+        m_renderAPI->draw();
         m_window->onUpdate();
     }
 }

@@ -108,13 +108,13 @@ namespace Worlds {
 
 class VKRenderAPI : public RenderAPI {
   public:
-    VKRenderAPI(GLFWwindow* window);
+    VKRenderAPI(GLFWwindow *window);
     virtual ~VKRenderAPI();
 
     void draw() override;
 
   private:
-    void init(); 
+    void init();
     void destroy();
 
     void framebufferResizeCallback();
@@ -197,8 +197,9 @@ class VKRenderAPI : public RenderAPI {
                   VkDebugUtilsMessageTypeFlagsEXT messageType,
                   const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
                   void *pUserData);
+
   private:
-    GLFWwindow* m_window;
+    GLFWwindow *m_window;
 
     VkInstance m_instance;
     VkDebugUtilsMessengerEXT m_debugMessenger;
@@ -261,7 +262,6 @@ class VKRenderAPI : public RenderAPI {
     size_t m_currentFrame = 0;
 
     bool m_framebufferResized = false;
-
 };
 
 } // namespace Worlds

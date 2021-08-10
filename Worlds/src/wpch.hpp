@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Worlds/Core/PlatformDetection.hpp"
+
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
@@ -13,3 +15,7 @@
 #include <optional>
 #include <set>
 #include <unordered_map>
+#include <string>
+
+#include "Worlds/Core/Base.hpp"
+#include "Worlds/Core/Log.hpp"

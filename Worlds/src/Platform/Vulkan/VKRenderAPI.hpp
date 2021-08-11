@@ -26,22 +26,12 @@
 
 #include "Worlds/Renderer/RenderAPI.hpp"
 
+#include "Platform/Vulkan/Devices/Instance.hpp"
+#include "Platform/Vulkan/Devices/Surface.hpp"
+#include "Platform/Vulkan/Devices/PhysicalDevice.hpp"
+#include "Platform/Vulkan/Devices/LogicalDevice.hpp"
+
 namespace Worlds {
-
-struct QueueFamilyIndices {
-    std::optional<uint32_t> graphicsFamily;
-    std::optional<uint32_t> presentFamily;
-
-    bool isComplete() {
-        return graphicsFamily.has_value() && presentFamily.has_value();
-    }
-};
-
-struct SwapChainSupportDetails {
-    VkSurfaceCapabilitiesKHR capabilities;
-    std::vector<VkSurfaceFormatKHR> formats;
-    std::vector<VkPresentModeKHR> presentModes;
-};
 
 struct Vertex {
     glm::vec3 pos;
@@ -108,26 +98,46 @@ namespace Worlds {
 
 class VKRenderAPI : public RenderAPI {
   public:
-    VKRenderAPI(GLFWwindow *window);
+    VKRenderAPI(GLFWwindow* window);
     virtual ~VKRenderAPI();
 
-    void draw() override;
+    void onWindowResize(WindowResizeEvent& e);
+    void onUpdate();
+
+    //Renderer* getRenderer(){ return m_renderer; }
+
+  private:
+    //void recreateSwapChain(); 
+    //void startRenderPass(); 
+    //void endRenderPass();
+
+  private:
+    Scope<Instance> m_instance;
+    Scope<Surface> m_surface;
+    Scope<PhysicalDevice> m_physical_device;
+    Scope<LogicalDevice> m_logical_device;
+    
+    std::size_t m_current_frame = 0;
+    bool m_framebuffer_resized = false;
+
+    std::vector<VkSemaphore> m_present_completes;
+    std::vector<VkSemaphore> m_render_completes;
+    std::vector<VkFence> m_in_flight_fences;
+    /*
+    Scope<Swapchain> m_swapchain;
+
+    std::vector<Scope<CommandBuffer>> m_command_buffers;
+
+    Scope<Renderer> m_renderer;
+    */
 
   private:
     void init();
     void destroy();
 
-    void framebufferResizeCallback();
     void mainLoop();
     void cleanupSwapChain();
     void recreateSwapChain();
-    void createInstance();
-    void populateDebugMessengerCreateInfo(
-        VkDebugUtilsMessengerCreateInfoEXT &createInfo);
-    void setupDebugMessenger();
-    void createSurface();
-    void pickPhysicalDevice();
-    void createLogicalDevice();
     void createSwapChain();
     void createImageViews();
     void createRenderPass();
@@ -145,7 +155,6 @@ class VKRenderAPI : public RenderAPI {
     void createTextureImage();
     void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth,
                          int32_t texHeight, uint32_t mipLevels);
-    VkSampleCountFlagBits getMaxUsableSampleCount();
     void createTextureImageView();
     void createTextureSampler();
     VkImageView createImageView(VkImage image, VkFormat format,
@@ -185,32 +194,10 @@ class VKRenderAPI : public RenderAPI {
     VkPresentModeKHR chooseSwapPresentMode(
         const std::vector<VkPresentModeKHR> &availablePresentModes);
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
-    SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
-    bool isDeviceSuitable(VkPhysicalDevice device);
-    bool checkDeviceExtensionSupport(VkPhysicalDevice device);
-    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-    std::vector<const char *> getRequiredExtensions();
-    bool checkValidationLayerSupport();
     static std::vector<char> readFile(const std::string &filename);
-    static VKAPI_ATTR VkBool32 VKAPI_CALL
-    debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-                  VkDebugUtilsMessageTypeFlagsEXT messageType,
-                  const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
-                  void *pUserData);
 
   private:
     GLFWwindow *m_window;
-
-    VkInstance m_instance;
-    VkDebugUtilsMessengerEXT m_debugMessenger;
-    VkSurfaceKHR m_surface;
-
-    VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
-    VkSampleCountFlagBits m_msaaSamples = VK_SAMPLE_COUNT_1_BIT;
-    VkDevice m_device;
-
-    VkQueue m_graphicsQueue;
-    VkQueue m_presentQueue;
 
     VkSwapchainKHR m_swapChain;
     ::std::vector<VkImage> m_swapChainImages;
@@ -254,14 +241,7 @@ class VKRenderAPI : public RenderAPI {
     std::vector<VkDescriptorSet> m_descriptorSets;
 
     std::vector<VkCommandBuffer> m_commandBuffers;
-
-    std::vector<VkSemaphore> m_imageAvailableSemaphores;
-    std::vector<VkSemaphore> m_renderFinishedSemaphores;
-    std::vector<VkFence> m_inFlightFences;
     std::vector<VkFence> m_imagesInFlight;
-    size_t m_currentFrame = 0;
-
-    bool m_framebufferResized = false;
 };
 
 } // namespace Worlds

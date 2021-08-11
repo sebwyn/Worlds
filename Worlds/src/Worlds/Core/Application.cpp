@@ -25,7 +25,7 @@ void Application::close() { m_running = false; }
 
 void Application::run() {
     while (m_running) {
-        m_renderAPI->draw();
+        m_renderAPI->onUpdate();
         m_window->onUpdate();
     }
 }
@@ -37,7 +37,7 @@ bool Application::onWindowResize(WindowResizeEvent &e) {
     }
 
     m_minimized = false;
-    // TODO: update the renderer state here
+    m_renderAPI->onWindowResize(e);
 
     return false;
 }

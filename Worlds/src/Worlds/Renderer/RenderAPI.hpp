@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Worlds/Core/Base.hpp"
+#include "Worlds/Events/ApplicationEvent.hpp"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
@@ -14,10 +15,12 @@ class RenderAPI {
   public:
     virtual ~RenderAPI() = default;
 
-    virtual void draw() = 0;
+    virtual void onWindowResize(WindowResizeEvent& e) = 0;
+    virtual void onUpdate() = 0;
 
-    API getAPI(){ return s_API; }
+    API getAPI() { return s_API; }
     static Scope<RenderAPI> create(void *window);
+
   private:
     static API s_API;
 };

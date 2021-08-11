@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 project(Worlds)
 
 #TODO: change what files we build based on platform detection
-file(GLOB src_files src/Platform/Mac/*.cpp src/Platform/Vulkan/*.cpp src/Worlds/Core/*.cpp src/Worlds/Renderer/*.cpp)
+file(GLOB src_files src/Platform/Mac/*.cpp src/Platform/Vulkan/*.cpp src/Platform/Vulkan/Devices/*.cpp src/Worlds/Core/*.cpp src/Worlds/Renderer/*.cpp)
 
 add_library(Worlds STATIC ${src_files})
 

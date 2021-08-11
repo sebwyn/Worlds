@@ -2,6 +2,8 @@
 
 #include "Worlds/Events/Event.hpp"
 
+#include <sstream>
+
 namespace Worlds {
 
 class WindowResizeEvent : public Event {

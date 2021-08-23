@@ -1,0 +1,34 @@
+A Vulkan Rendering Object Model:
+    Each Frame:
+        Record Command Buffer:
+            A renderer object:
+                Begin a renderpass (say a standard forward render)
+                with associated attachment objects:
+                    For each Subpass/Pipeline:
+                        Bind Pipeline 
+                        Bind Associated Descriptors:
+                            Bind Object Descriptors
+                            Draw Command
+                Begin another renderpass (post process)
+        End Recording:
+
+Objects:
+    Renderpass
+    Subpass/Pipeline
+
+Resources:
+    Attachment
+    Shader Module
+    Textures
+    Framebuffers
+    Descriptors
+    Buffers
+
+Example Instantantion of these objects:
+    Scene Renderer:
+        containing a renderpass for rendering to texture used the scene renderer 
+        containing a scene forward pass renderpass
+            containing separate pipelines for materials
+        containing a post processing pass
+    Deferred Renderer:
+        

@@ -12,15 +12,11 @@ LogicalDevice::LogicalDevice(const Instance *instance, const Surface *surface,
 LogicalDevice::~LogicalDevice() { vkDestroyDevice(m_logical_device, nullptr); }
 
 void LogicalDevice::createLogicalDevice() {
-    QueueFamilyIndices indices =
-        findQueueFamilies(m_physical_device->getPhysicalDevice());
-
-    m_graphics_family = indices.graphicsFamily.value();
-    m_present_family = indices.presentFamily.value();
+    findQueueFamilies(m_physical_device->getPhysicalDevice());
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-    std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(),
-                                              indices.presentFamily.value()};
+    std::set<uint32_t> uniqueQueueFamilies = {
+        m_graphics_family, m_present_family, m_compute_family};
 
     float queuePriority = 1.0f;
     for (uint32_t queueFamily : uniqueQueueFamilies) {
@@ -32,8 +28,7 @@ void LogicalDevice::createLogicalDevice() {
         queueCreateInfos.push_back(queueCreateInfo);
     }
 
-    VkPhysicalDeviceFeatures deviceFeatures{};
-    deviceFeatures.samplerAnisotropy = VK_TRUE;
+    m_enabled_features.samplerAnisotropy = VK_TRUE;
 
     VkDeviceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -42,7 +37,7 @@ void LogicalDevice::createLogicalDevice() {
         static_cast<uint32_t>(queueCreateInfos.size());
     createInfo.pQueueCreateInfos = queueCreateInfos.data();
 
-    createInfo.pEnabledFeatures = &deviceFeatures;
+    createInfo.pEnabledFeatures = &m_enabled_features;
 
     createInfo.enabledExtensionCount =
         static_cast<uint32_t>(deviceExtensions.size());
@@ -63,11 +58,10 @@ void LogicalDevice::createLogicalDevice() {
 
     vkGetDeviceQueue(m_logical_device, m_graphics_family, 0, &m_graphics_queue);
     vkGetDeviceQueue(m_logical_device, m_present_family, 0, &m_present_queue);
+    vkGetDeviceQueue(m_logical_device, m_compute_family, 0, &m_compute_queue);
 }
 
-QueueFamilyIndices LogicalDevice::findQueueFamilies(VkPhysicalDevice device) {
-    QueueFamilyIndices indices;
-
+void LogicalDevice::findQueueFamilies(VkPhysicalDevice device) {
     uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount,
                                              nullptr);
@@ -76,26 +70,36 @@ QueueFamilyIndices LogicalDevice::findQueueFamilies(VkPhysicalDevice device) {
     vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount,
                                              queueFamilies.data());
 
+    std::optional<uint32_t> graphicsFamily, computeFamily, presentFamily;
+
+    uint32_t foundFamily = 0;
+
     int i = 0;
     for (const auto &queueFamily : queueFamilies) {
         if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-            indices.graphicsFamily = i;
+            graphicsFamily = i;
+            m_graphics_family = i;
+            supportedQueues |= VK_QUEUE_GRAPHICS_BIT;
+        }
+
+        if (queueFamily.queueFlags & VK_QUEUE_COMPUTE_BIT) {
+            computeFamily = i;
+            m_compute_family = i;
+            supportedQueues |= VK_QUEUE_COMPUTE_BIT;
         }
 
         VkBool32 presentSupport = false;
         vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_surface->getSurface(),
                                              &presentSupport);
-
         if (presentSupport) {
-            indices.presentFamily = i;
+            presentFamily = i;
+            m_present_family = i;
         }
 
-        if (indices.isComplete()) {
+        if (graphicsFamily && computeFamily && presentFamily) {
             break;
         }
 
         i++;
     }
-
-    return indices;
 }

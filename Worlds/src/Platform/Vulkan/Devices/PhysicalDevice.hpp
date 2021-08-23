@@ -18,12 +18,20 @@ struct SwapChainSupportDetails {
 
 class PhysicalDevice {
   public:
-    PhysicalDevice(const Instance* instance, const Surface* surface);
+    PhysicalDevice(const Instance *instance, const Surface *surface);
     ~PhysicalDevice();
 
-    const VkPhysicalDevice& getPhysicalDevice() const { return m_physical_device; }
-    const VkSampleCountFlagBits& getSampleCount() const { return m_msaaSamples; }
-    SwapChainSupportDetails querySwapChainSupport();
+    const VkPhysicalDevice &getPhysicalDevice() const {
+        return m_physical_device;
+    }
+    const VkPhysicalDeviceProperties &getProperties() const {
+        return m_properties;
+    }
+    const VkSampleCountFlagBits &getSampleCount() const {
+        return m_msaaSamples;
+    }
+    const SwapChainSupportDetails querySwapchainSupport() const;
+
   private:
     void pickPhysicalDevice();
     bool isDeviceSuitable(VkPhysicalDevice device);
@@ -31,11 +39,14 @@ class PhysicalDevice {
     VkSampleCountFlagBits getMaxUsableSampleCount();
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
     SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
+
   private:
-    const Instance* m_instance;
-    const Surface* m_surface;
+    const Instance *m_instance;
+    const Surface *m_surface;
 
     VkPhysicalDevice m_physical_device = VK_NULL_HANDLE;
+    VkPhysicalDeviceProperties m_properties = {};
+
     VkSampleCountFlagBits m_msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 };
 

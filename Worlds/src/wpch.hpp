@@ -16,6 +16,7 @@
 #include <set>
 #include <unordered_map>
 #include <string>
+#include <map>
 
 #include "Worlds/Core/Base.hpp"
 #include "Worlds/Core/Log.hpp"

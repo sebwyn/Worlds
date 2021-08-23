@@ -27,9 +27,16 @@
 #include "Worlds/Renderer/RenderAPI.hpp"
 
 #include "Platform/Vulkan/Devices/Instance.hpp"
-#include "Platform/Vulkan/Devices/Surface.hpp"
-#include "Platform/Vulkan/Devices/PhysicalDevice.hpp"
 #include "Platform/Vulkan/Devices/LogicalDevice.hpp"
+#include "Platform/Vulkan/Devices/PhysicalDevice.hpp"
+#include "Platform/Vulkan/Devices/Surface.hpp"
+
+#include "Platform/Vulkan/Renderpass/Swapchain.hpp"
+
+#include "Platform/Vulkan/Command/CommandBuffer.hpp"
+#include "Platform/Vulkan/Command/CommandPool.hpp"
+
+#include "Platform/Vulkan/Renderer.hpp"
 
 namespace Worlds {
 
@@ -98,150 +105,50 @@ namespace Worlds {
 
 class VKRenderAPI : public RenderAPI {
   public:
-    VKRenderAPI(GLFWwindow* window);
+    static void init(GLFWwindow *window) {
+        s_instance = CreateScope<VKRenderAPI>(window);
+    }
+    static VKRenderAPI *get() { return s_instance.get(); }
+
+    VKRenderAPI(GLFWwindow *window);
     virtual ~VKRenderAPI();
 
-    void onWindowResize(WindowResizeEvent& e);
+    void onWindowResize(WindowResizeEvent &e);
     void onUpdate();
 
-    //Renderer* getRenderer(){ return m_renderer; }
+    const PhysicalDevice *getPhysicalDevice() {
+        return m_physical_device.get();
+    }
+    const LogicalDevice *getLogicalDevice() { return m_logical_device.get(); }
+    Ref<CommandPool> getCommandPool() { return m_command_pool; }
 
   private:
-    //void recreateSwapChain(); 
-    //void startRenderPass(); 
-    //void endRenderPass();
+    void recreateSwapchain();
+    bool startRenderpass(RenderStage &renderpass);
+    void endRenderpass(RenderStage &renderpass);
 
   private:
+    static Scope<VKRenderAPI> s_instance;
+    GLFWwindow *m_window;
+
     Scope<Instance> m_instance;
     Scope<Surface> m_surface;
     Scope<PhysicalDevice> m_physical_device;
     Scope<LogicalDevice> m_logical_device;
-    
+
+    Scope<Swapchain> m_swapchain;
+
     std::size_t m_current_frame = 0;
     bool m_framebuffer_resized = false;
 
     std::vector<VkSemaphore> m_present_completes;
     std::vector<VkSemaphore> m_render_completes;
     std::vector<VkFence> m_in_flight_fences;
-    /*
-    Scope<Swapchain> m_swapchain;
 
+    Ref<CommandPool> m_command_pool;
     std::vector<Scope<CommandBuffer>> m_command_buffers;
 
     Scope<Renderer> m_renderer;
-    */
-
-  private:
-    void init();
-    void destroy();
-
-    void mainLoop();
-    void cleanupSwapChain();
-    void recreateSwapChain();
-    void createSwapChain();
-    void createImageViews();
-    void createRenderPass();
-    void createDescriptorSetLayout();
-    void createGraphicsPipeline();
-    void createFramebuffers();
-    void createCommandPool();
-    void createColorResources();
-    void createDepthResources();
-    VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates,
-                                 VkImageTiling tiling,
-                                 VkFormatFeatureFlags features);
-    VkFormat findDepthFormat();
-    bool hasStencilComponent(VkFormat format);
-    void createTextureImage();
-    void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth,
-                         int32_t texHeight, uint32_t mipLevels);
-    void createTextureImageView();
-    void createTextureSampler();
-    VkImageView createImageView(VkImage image, VkFormat format,
-                                VkImageAspectFlags aspectFlags,
-                                uint32_t mipLevels);
-    void createImage(uint32_t width, uint32_t height, uint32_t mipLevels,
-                     VkSampleCountFlagBits numSamples, VkFormat format,
-                     VkImageTiling tiling, VkImageUsageFlags usage,
-                     VkMemoryPropertyFlags properties, VkImage &image,
-                     VkDeviceMemory &imageMemory);
-    void transitionImageLayout(VkImage image, VkFormat format,
-                               VkImageLayout oldLayout, VkImageLayout newLayout,
-                               uint32_t mipLevels);
-    void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width,
-                           uint32_t height);
-    void loadModel();
-    void createVertexBuffer();
-    void createIndexBuffer();
-    void createUniformBuffers();
-    void createDescriptorPool();
-    void createDescriptorSets();
-    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage,
-                      VkMemoryPropertyFlags properties, VkBuffer &buffer,
-                      VkDeviceMemory &bufferMemory);
-    VkCommandBuffer beginSingleTimeCommands();
-    void endSingleTimeCommands(VkCommandBuffer commandBuffer);
-    void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-    uint32_t findMemoryType(uint32_t typeFilter,
-                            VkMemoryPropertyFlags properties);
-    void createCommandBuffers();
-    void createSyncObjects();
-    void updateUniformBuffer(uint32_t currentImage);
-    void drawFrame();
-    VkShaderModule createShaderModule(const std::vector<char> &code);
-    VkSurfaceFormatKHR chooseSwapSurfaceFormat(
-        const std::vector<VkSurfaceFormatKHR> &availableFormats);
-    VkPresentModeKHR chooseSwapPresentMode(
-        const std::vector<VkPresentModeKHR> &availablePresentModes);
-    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR &capabilities);
-    static std::vector<char> readFile(const std::string &filename);
-
-  private:
-    GLFWwindow *m_window;
-
-    VkSwapchainKHR m_swapChain;
-    ::std::vector<VkImage> m_swapChainImages;
-    VkFormat m_swapChainImageFormat;
-    VkExtent2D m_swapChainExtent;
-    ::std::vector<VkImageView> m_swapChainImageViews;
-    ::std::vector<VkFramebuffer> m_swapChainFramebuffers;
-
-    VkRenderPass m_renderPass;
-    VkDescriptorSetLayout m_descriptorSetLayout;
-    VkPipelineLayout m_pipelineLayout;
-    VkPipeline m_graphicsPipeline;
-
-    VkCommandPool m_commandPool;
-
-    VkImage m_colorImage;
-    VkDeviceMemory m_colorImageMemory;
-    VkImageView m_colorImageView;
-
-    VkImage m_depthImage;
-    VkDeviceMemory m_depthImageMemory;
-    VkImageView m_depthImageView;
-
-    uint32_t m_mipLevels;
-    VkImage m_textureImage;
-    VkDeviceMemory m_textureImageMemory;
-    VkImageView m_textureImageView;
-    VkSampler m_textureSampler;
-
-    std::vector<Vertex> m_vertices;
-    std::vector<uint32_t> m_indices;
-    VkBuffer m_vertexBuffer;
-    VkDeviceMemory m_vertexBufferMemory;
-    VkBuffer m_indexBuffer;
-    VkDeviceMemory m_indexBufferMemory;
-
-    std::vector<VkBuffer> m_uniformBuffers;
-    std::vector<VkDeviceMemory> m_uniformBuffersMemory;
-
-    VkDescriptorPool m_descriptorPool;
-    std::vector<VkDescriptorSet> m_descriptorSets;
-
-    std::vector<VkCommandBuffer> m_commandBuffers;
-    std::vector<VkFence> m_imagesInFlight;
 };
 
 } // namespace Worlds

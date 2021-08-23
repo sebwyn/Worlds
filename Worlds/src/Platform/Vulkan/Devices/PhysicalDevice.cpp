@@ -9,8 +9,8 @@ PhysicalDevice::PhysicalDevice(const Instance *instance, const Surface *surface)
 
 PhysicalDevice::~PhysicalDevice(){}
 
-SwapChainSupportDetails
-PhysicalDevice::querySwapChainSupport() {
+const SwapChainSupportDetails
+PhysicalDevice::querySwapchainSupport() const {
     SwapChainSupportDetails details;
 
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(m_physical_device, m_surface->getSurface(),
@@ -88,12 +88,11 @@ bool PhysicalDevice::isDeviceSuitable(VkPhysicalDevice device) {
 }
 
 VkSampleCountFlagBits PhysicalDevice::getMaxUsableSampleCount() {
-    VkPhysicalDeviceProperties physicalDeviceProperties;
-    vkGetPhysicalDeviceProperties(m_physical_device, &physicalDeviceProperties);
+    vkGetPhysicalDeviceProperties(m_physical_device, &m_properties);
 
     VkSampleCountFlags counts =
-        physicalDeviceProperties.limits.framebufferColorSampleCounts &
-        physicalDeviceProperties.limits.framebufferDepthSampleCounts;
+        m_properties.limits.framebufferColorSampleCounts &
+        m_properties.limits.framebufferDepthSampleCounts;
     if (counts & VK_SAMPLE_COUNT_64_BIT) {
         return VK_SAMPLE_COUNT_64_BIT;
     }

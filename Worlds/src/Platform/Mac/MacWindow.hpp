@@ -1,7 +1,7 @@
 #pragma once
 
 // TODO: move this include to make glfw be able to use either
-#define GLFW_INCLUDE_VULKAN
+#include <volk.h>
 #include <GLFW/glfw3.h>
 
 #include "Worlds/Core/Window.hpp"
@@ -25,7 +25,11 @@ class MacWindow : public Window {
     void setVSync(bool enabled) override;
     bool isVSync() const override;
 
+    glm::uvec2 GetSize() override;
+
     void *getNativeWindow() override { return m_window; }
+    std::pair<const char**, uint32_t> GetInstanceExtensions() override;
+    VkResult CreateSurface(const VkInstance &instance, const VkAllocationCallbacks *allocator, VkSurfaceKHR *surface) override;
 
   private:
     void init(const WindowProps &props);

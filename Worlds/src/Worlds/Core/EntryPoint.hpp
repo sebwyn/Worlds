@@ -3,13 +3,13 @@
 #include "Worlds/Core/Application.hpp"
 #include "Worlds/Core/Log.hpp"
 
-extern Worlds::Application *Worlds::CreateApplication();
+extern Worlds::Application *Worlds::CreateApplication(int argc, char** argv);
 
 int main(int argc, char **argv) {
     Worlds::Log::init();
 
-    auto app = Worlds::CreateApplication();
-    app->run();
+    auto app = Worlds::CreateApplication(argc, argv);
+    app->Run();
     delete app;
 
     return 0;

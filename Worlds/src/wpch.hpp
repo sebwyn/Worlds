@@ -17,6 +17,11 @@
 #include <unordered_map>
 #include <string>
 #include <map>
+#include <sstream>
+#include <type_traits>
+#include <typeindex>
+
+#include <glm/glm.hpp>
 
 #include "Worlds/Core/Base.hpp"
 #include "Worlds/Core/Log.hpp"

@@ -28,9 +28,10 @@ void MacWindow::init(const WindowProps &props) {
         int success = glfwInit();
         W_CORE_ASSERT(success, "Could not initialize GLFW!");
         glfwSetErrorCallback(GLFWErrorCallback);
-        //for vulkan
+        // for vulkan
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        m_window = glfwCreateWindow(m_data.width, m_data.height, m_data.title.c_str(), nullptr, nullptr);
+        m_window = glfwCreateWindow(m_data.width, m_data.height,
+                                    m_data.title.c_str(), nullptr, nullptr);
         ++s_GLFWWindowCount;
     }
 
@@ -53,7 +54,7 @@ void MacWindow::init(const WindowProps &props) {
         data.eventCallback(event);
     });
 
-    //TODO: get key and mouse events
+    // TODO: get key and mouse events
 }
 
 void MacWindow::shutdown() {
@@ -65,15 +66,31 @@ void MacWindow::shutdown() {
     }
 }
 
-void MacWindow::onUpdate() {
-    glfwPollEvents();
-}
+void MacWindow::onUpdate() { glfwPollEvents(); }
 
 void MacWindow::setVSync(bool enabled) {
-    //TODO: get vsyn working
+    // TODO: get vsyn working
     m_data.vsync = enabled;
 }
 
 bool MacWindow::isVSync() const { return m_data.vsync; }
+
+glm::uvec2 MacWindow::GetSize() {
+    int width, height;
+    glfwGetWindowSize(m_window, &width, &height);
+    return glm::uvec2(width, height);
+}
+
+std::pair<const char **, uint32_t> MacWindow::GetInstanceExtensions() {
+    uint32_t count;
+    const char **extensions = glfwGetRequiredInstanceExtensions(&count);
+    return std::make_pair(extensions, count);
+}
+
+VkResult MacWindow::CreateSurface(const VkInstance &instance,
+                                  const VkAllocationCallbacks *allocator,
+                                  VkSurfaceKHR *surface) {
+    return glfwCreateWindowSurface(instance, m_window, allocator, surface);
+}
 
 }; // namespace Worlds

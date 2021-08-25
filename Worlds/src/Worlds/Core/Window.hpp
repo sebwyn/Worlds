@@ -5,6 +5,9 @@
 #include "Worlds/Core/Base.hpp"
 #include "Worlds/Events/Event.hpp"
 
+#include <glm/glm.hpp>
+#include <volk.h>
+
 namespace Worlds {
 
 struct WindowProps {
@@ -19,6 +22,7 @@ class Window {
   public:
     using EventCallbackFn = std::function<void(Event &)>;
 
+    Window() { instance = this; }
     virtual ~Window() = default;
 
     virtual void onUpdate() = 0;
@@ -32,8 +36,17 @@ class Window {
     virtual bool isVSync() const = 0;
 
     virtual void *getNativeWindow() = 0;
+    virtual std::pair<const char**, uint32_t> GetInstanceExtensions() = 0;
+    virtual VkResult CreateSurface(const VkInstance &instance, const VkAllocationCallbacks *allocator, VkSurfaceKHR *surface) = 0;
 
     static Scope<Window> create(const WindowProps &props = WindowProps());
+
+    virtual glm::uvec2 GetSize() = 0;
+
+    static Window &Get() { return *instance; }
+
+  private:
+    static Window *instance;
 };
 
 } // namespace Worlds

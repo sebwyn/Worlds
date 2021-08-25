@@ -3,47 +3,47 @@
 
 namespace Worlds {
 
-Application *Application::s_instance = nullptr;
+Application *Application::instance = nullptr;
 
-Application::Application() {
-    s_instance = this;
-    m_window = Window::create(WindowProps());
-    m_window->setEventCallback(W_BIND_EVENT_FN(Application::onEvent));
+Application::Application(int argc, char **argv) : argc(argc), argv(argv) {
+    instance = this;
+    window = Window::create(WindowProps());
+    window->setEventCallback(W_BIND_EVENT_FN(Application::OnEvent));
 
-    m_renderAPI = RenderAPI::create(m_window->getNativeWindow());
+    graphics = CreateScope<Graphics>();
+    files = CreateScope<Files>();
 }
 
-void Application::onEvent(Event &e) {
+void Application::OnEvent(Event &e) {
     EventDispatcher dispatcher(e);
     dispatcher.dispatch<WindowResizeEvent>(
-        W_BIND_EVENT_FN(Application::onWindowResize));
+        W_BIND_EVENT_FN(Application::OnWindowResize));
     dispatcher.dispatch<WindowCloseEvent>(
-        W_BIND_EVENT_FN(Application::onWindowClose));
+        W_BIND_EVENT_FN(Application::OnWindowClose));
 }
 
-void Application::close() { m_running = false; }
+void Application::Close() { running = false; }
 
-void Application::run() {
-    while (m_running) {
-        m_renderAPI->onUpdate();
-        m_window->onUpdate();
+void Application::Run() {
+    while (running) {
+        window->onUpdate();
+        
+        graphics->Update();
     }
 }
 
-bool Application::onWindowResize(WindowResizeEvent &e) {
+bool Application::OnWindowResize(WindowResizeEvent &e) {
     if (e.getWidth() == 0 || e.getHeight() == 0) {
-        m_minimized = true;
+        minimized = true;
         return false;
     }
 
-    m_minimized = false;
-    m_renderAPI->onWindowResize(e);
-
+    minimized = false;
     return false;
 }
 
-bool Application::onWindowClose(WindowCloseEvent &e) {
-    m_running = false;
+bool Application::OnWindowClose(WindowCloseEvent &e) {
+    running = false;
     return true;
 }
 

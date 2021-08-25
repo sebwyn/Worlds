@@ -11,7 +11,7 @@ template <typename T> class TypeInfo {
 
     template <typename K,
               typename = std::enable_if<std::is_convertible_v<K *, T *>>>
-    static TypeId getTypeId() noexcept {
+    static TypeId GetTypeId() noexcept {
         std::type_index typeIndex(typeid(K));
         if (auto it = s_type_map.find(typeIndex); it != s_type_map.end())
             return it->second;

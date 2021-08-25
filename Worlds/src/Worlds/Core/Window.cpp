@@ -9,6 +9,8 @@
 
 using namespace Worlds;
 
+Window* Window::instance;
+
 Scope<Window> Window::create(const WindowProps& props){
     #ifdef W_PLATFORM_MACOS
         return CreateScope<MacWindow>(props);

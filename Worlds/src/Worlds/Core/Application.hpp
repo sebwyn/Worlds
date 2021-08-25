@@ -3,7 +3,9 @@
 #include "Worlds/Core/Window.hpp"
 #include "Worlds/Events/ApplicationEvent.hpp"
 #include "Worlds/Events/Event.hpp"
-#include "Worlds/Renderer/RenderAPI.hpp"
+
+#include "Worlds/Graphics/Graphics.hpp"
+#include "Worlds/Files/Files.hpp"
 
 int main(int argc, char **argv);
 
@@ -11,33 +13,42 @@ namespace Worlds {
 
 class Application {
   public:
-    Application();
+    Application(int argc, char **argv);
     virtual ~Application();
 
-    void onEvent(Event &e);
+    void OnEvent(Event &e);
 
-    void close();
+    void Close();
 
-    Window &getWindow() { return *m_window; }
-    static Application &get() { return *s_instance; }
+    Window &GetWindow() { return *window; }
+    static Application &Get() { return *instance; }
+
+    char *GetArgv0() { return argv[0]; }
+
+    bool IsMinimized() { return minimized; }
+
+  protected:
+    Scope<Graphics> graphics;
 
   private:
-    void run();
-    bool onWindowResize(WindowResizeEvent &e);
-    bool onWindowClose(WindowCloseEvent &e);
+    void Run();
+    bool OnWindowResize(WindowResizeEvent &e);
+    bool OnWindowClose(WindowCloseEvent &e);
 
   private:
+    int argc;
+    char **argv;
 
-    bool m_running = true;
-    bool m_minimized = false;
+    bool running = true;
+    bool minimized = false;
 
-    Scope<Window> m_window;
-    Scope<RenderAPI> m_renderAPI;
+    Scope<Window> window;
+    Scope<Files> files;
 
-    static Application *s_instance;
+    static Application *instance;
     friend int ::main(int argc, char **argv);
 };
 
-Application *CreateApplication();
+Application *CreateApplication(int argc, char **argv);
 
 } // namespace Worlds

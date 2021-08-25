@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 project(Worlds)
 
 set_property(GLOBAL PROPERTY ALLOW_DUPLICATE_CUSTOM_TARGETS  True)
+set(BUILD_SHARED_LIBS False)
 
 include(FetchContent)
 
@@ -47,6 +48,24 @@ if(NOT volk_FOUND)
 	add_library(volk::volk ALIAS volk)
 endif()
 
+find_package(glfw3 3.3 QUIET)
+if(NOT TARGET glfw)
+	set(_ACID_ALL_SYSTEM_LIBS false)
+	FetchContent_Declare(glfw3
+			URL https://github.com/glfw/glfw/archive/3.3.2.tar.gz
+			URL_MD5 865e54ff0a100e9041a40429db98be0b
+			)
+	FetchContent_GetProperties(glfw3)
+	if(NOT glfw3_POPULATED)
+		foreach(_glfw3_option "GLFW_BUILD_TESTS" "GLFW_BUILD_EXAMPLES" "GLFW_BUILD_DOCS" "GLFW_INSTALL")
+			set(${_glfw3_option} OFF CACHE INTERNAL "")
+		endforeach()
+		FetchContent_Populate(glfw3)
+		add_subdirectory(${glfw3_SOURCE_DIR} ${glfw3_BINARY_DIR})
+	endif()
+	set_target_properties(glfw PROPERTIES FOLDER External)
+endif()
+
 if(NOT glslang_FOUND)
 	set(_ACID_ALL_SYSTEM_LIBS false)
 	FetchContent_Declare(glslang
@@ -78,27 +97,74 @@ else()
 	set(GLSLANG_LIBRARIES glslang::glslang glslang::SPIRV)
 endif()
 
-add_subdirectory(ext/glfw)
+find_package(PhysFS 3.0.1 QUIET)
+if(NOT PhysFS_FOUND)
+	set(_ACID_ALL_SYSTEM_LIBS false)
+	FetchContent_Declare(physfs
+			URL https://github.com/EQMG/physfs/tarball/e5da0dbd4674fa421ace0efbf0ad0dd692995b08
+			URL_MD5 d3bb92335e9565c4101ee3ea10b42e43
+			)
+	FetchContent_GetProperties(physfs)
+	if(NOT physfs_POPULATED)
+		set(PHYSFS_BUILD_STATIC NOT${BUILD_SHARED_LIBS} CACHE INTERNAL "")
+		set(PHYSFS_BUILD_SHARED ${BUILD_SHARED_LIBS} CACHE INTERNAL "")
+		set(PHYSFS_BUILD_TEST OFF CACHE INTERNAL "")
+		set(PHYSFS_TARGETNAME_DOCS "physfs-docs" CACHE INTERNAL STRING)
+		set(PHYSFS_TARGETNAME_DIST "physfs-dist" CACHE INTERNAL STRING)
+		set(PHYSFS_TARGETNAME_UNINSTALL "physfs-uninstall" CACHE INTERNAL STRING)
+		set(CMAKE_DISABLE_FIND_PACKAGE_Doxygen TRUE)
+		FetchContent_Populate(physfs)
+		add_subdirectory(${physfs_SOURCE_DIR} ${physfs_BINARY_DIR})
+	endif()
+	set_target_properties(physfs-static PROPERTIES FOLDER External/physfs)
+	if(TARGET physfs)
+		set_target_properties(physfs PROPERTIES FOLDER External/physfs)
+	endif()
+	if(TARGET physfs-docs)
+		set_target_properties(physfs-docs PROPERTIES FOLDER External/physfs)
+	endif()
+	if(TARGET physfs-uninstall)
+		set_target_properties(physfs-uninstall PROPERTIES FOLDER External/physfs)
+	endif()
+
+	# PhysFS disables rpath on GNU, when disabled Acid will not run on Unix.
+	if(CMAKE_COMPILER_IS_GNUCC)
+		set(CMAKE_SKIP_RPATH OFF CACHE BOOL "Skip RPATH" FORCE)
+	endif()
+
+	set(PHYSFS_INCLUDE_DIR "${physfs_SOURCE_DIR}/src")
+	# Set here so we can use it in Sources/CMakeLists.txt
+	if(PHYSFS_BUILD_STATIC)
+		set(PHYSFS_LIBRARY physfs-static)
+	else()
+		set(PHYSFS_LIBRARY physfs)
+	endif()
+endif()
+
+if(APPLE)
+    set(OTHER_LDFLAGS ${OTHER_LDFLAGS} "-framework IOKit -framework Foundation -framework CoreFoundation")
+endif()
+
 add_subdirectory(ext/glm)
 add_subdirectory(ext/spdlog)
-add_subdirectory(ext/physfs)
 
 target_include_directories(Worlds 
     PUBLIC 
     src/ 
     ext/ 
     ${Vulkan_INCLUDE_DIRS}
-    ext/physfs/src
     $<$<BOOL:${GLSLANG_INCLUDE_DIRS}>:${GLSLANG_INCLUDE_DIRS}>
+    $<$<BOOL:${PHYSFS_INCLUDE_DIR}>:${PHYSFS_INCLUDE_DIR}>
 )
 target_link_libraries(Worlds 
-    glfw 
-    ${GLFW_LIBRARIES} 
     glm
     spdlog
     ${Vulkan_LIBRARIES} 
-    physfs
-    ${GLSLANG_LIBRARIES}
+    ${OTHER_LDFLAGS}
+
     volk::volk
+    glfw
+    ${GLSLANG_LIBRARIES}
+    ${PHYSFS_LIBRARY}
 )
 

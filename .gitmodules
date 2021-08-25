@@ -7,6 +7,3 @@
 [submodule "Worlds/ext/spdlog"]
 	path = Worlds/ext/spdlog
 	url = https://github.com/gabime/spdlog
-[submodule "Worlds/ext/physfs"]
-	path = Worlds/ext/physfs
-	url = https://github.com/icculus/physfs

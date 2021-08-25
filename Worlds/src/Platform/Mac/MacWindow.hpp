@@ -13,30 +13,29 @@ class MacWindow : public Window {
     MacWindow(const WindowProps &props);
     virtual ~MacWindow();
 
-    void onUpdate() override;
-
-    uint32_t getWidth() const override { return m_data.width; }
-    uint32_t getHeight() const override { return m_data.height; }
-
-    // Window attributes
-    void setEventCallback(const EventCallbackFn &callback) override {
-        m_data.eventCallback = callback;
-    }
-    void setVSync(bool enabled) override;
-    bool isVSync() const override;
+    void Update() override;
 
     glm::uvec2 GetSize() override;
 
-    void *getNativeWindow() override { return m_window; }
-    std::pair<const char**, uint32_t> GetInstanceExtensions() override;
-    VkResult CreateSurface(const VkInstance &instance, const VkAllocationCallbacks *allocator, VkSurfaceKHR *surface) override;
+    void SetEventCallback(const EventCallbackFn &callback) override {
+        data.eventCallback = callback;
+    }
+    void SetVSync(bool enabled) override;
+    bool IsVSync() const override;
+
+    void *GetNativeWindow() override { return window; }
+
+    std::pair<const char **, uint32_t> GetInstanceExtensions() override;
+    VkResult CreateSurface(const VkInstance &instance,
+                           const VkAllocationCallbacks *allocator,
+                           VkSurfaceKHR *surface) override;
 
   private:
     void init(const WindowProps &props);
     void shutdown();
 
   private:
-    GLFWwindow *m_window;
+    GLFWwindow *window;
 
     struct WindowData {
         std::string title;
@@ -46,7 +45,7 @@ class MacWindow : public Window {
         EventCallbackFn eventCallback;
     };
 
-    WindowData m_data;
+    WindowData data;
 };
 
 } // namespace Worlds

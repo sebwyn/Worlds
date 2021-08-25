@@ -22,28 +22,27 @@ class Window {
   public:
     using EventCallbackFn = std::function<void(Event &)>;
 
+    static Scope<Window> Create(const WindowProps &props = WindowProps());
+    static Window &Get() { return *instance; }
+
     Window() { instance = this; }
     virtual ~Window() = default;
 
-    virtual void onUpdate() = 0;
-
-    virtual uint32_t getWidth() const = 0;
-    virtual uint32_t getHeight() const = 0;
-
-    // Window attributes
-    virtual void setEventCallback(const EventCallbackFn &callback) = 0;
-    virtual void setVSync(bool enabled) = 0;
-    virtual bool isVSync() const = 0;
-
-    virtual void *getNativeWindow() = 0;
-    virtual std::pair<const char**, uint32_t> GetInstanceExtensions() = 0;
-    virtual VkResult CreateSurface(const VkInstance &instance, const VkAllocationCallbacks *allocator, VkSurfaceKHR *surface) = 0;
-
-    static Scope<Window> create(const WindowProps &props = WindowProps());
+    virtual void Update() = 0;
 
     virtual glm::uvec2 GetSize() = 0;
 
-    static Window &Get() { return *instance; }
+    virtual bool IsVSync() const = 0;
+    virtual void SetVSync(bool enabled) = 0;
+
+    virtual void SetEventCallback(const EventCallbackFn &callback) = 0;
+
+    virtual void *GetNativeWindow() = 0;
+
+    virtual std::pair<const char **, uint32_t> GetInstanceExtensions() = 0;
+    virtual VkResult CreateSurface(const VkInstance &instance,
+                                   const VkAllocationCallbacks *allocator,
+                                   VkSurfaceKHR *surface) = 0;
 
   private:
     static Window *instance;

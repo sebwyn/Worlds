@@ -17,9 +17,9 @@ MacWindow::~MacWindow() { shutdown(); }
 
 void MacWindow::init(const WindowProps &props) {
 
-    m_data.title = props.title;
-    m_data.width = props.width;
-    m_data.height = props.height;
+    data.title = props.title;
+    data.width = props.width;
+    data.height = props.height;
 
     W_CORE_INFO("Creating window {0} ({1}, {2})", props.title, props.width,
                 props.height);
@@ -30,16 +30,16 @@ void MacWindow::init(const WindowProps &props) {
         glfwSetErrorCallback(GLFWErrorCallback);
         // for vulkan
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        m_window = glfwCreateWindow(m_data.width, m_data.height,
-                                    m_data.title.c_str(), nullptr, nullptr);
+        window = glfwCreateWindow(data.width, data.height, data.title.c_str(),
+                                  nullptr, nullptr);
         ++s_GLFWWindowCount;
     }
 
-    glfwSetWindowUserPointer(m_window, &m_data);
-    setVSync(true);
+    glfwSetWindowUserPointer(window, &data);
+    SetVSync(true);
 
     glfwSetWindowSizeCallback(
-        m_window, [](GLFWwindow *window, int width, int height) {
+        window, [](GLFWwindow *window, int width, int height) {
             WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
             data.width = width;
             data.height = height;
@@ -48,7 +48,7 @@ void MacWindow::init(const WindowProps &props) {
             data.eventCallback(event);
         });
 
-    glfwSetWindowCloseCallback(m_window, [](GLFWwindow *window) {
+    glfwSetWindowCloseCallback(window, [](GLFWwindow *window) {
         WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
         WindowCloseEvent event;
         data.eventCallback(event);
@@ -58,7 +58,7 @@ void MacWindow::init(const WindowProps &props) {
 }
 
 void MacWindow::shutdown() {
-    glfwDestroyWindow(m_window);
+    glfwDestroyWindow(window);
     --s_GLFWWindowCount;
 
     if (s_GLFWWindowCount == 0) {
@@ -66,20 +66,16 @@ void MacWindow::shutdown() {
     }
 }
 
-void MacWindow::onUpdate() { glfwPollEvents(); }
+void MacWindow::Update() { glfwPollEvents(); }
 
-void MacWindow::setVSync(bool enabled) {
+void MacWindow::SetVSync(bool enabled) {
     // TODO: get vsyn working
-    m_data.vsync = enabled;
+    data.vsync = enabled;
 }
 
-bool MacWindow::isVSync() const { return m_data.vsync; }
+bool MacWindow::IsVSync() const { return data.vsync; }
 
-glm::uvec2 MacWindow::GetSize() {
-    int width, height;
-    glfwGetWindowSize(m_window, &width, &height);
-    return glm::uvec2(width, height);
-}
+glm::uvec2 MacWindow::GetSize() { return glm::uvec2(data.width, data.height); }
 
 std::pair<const char **, uint32_t> MacWindow::GetInstanceExtensions() {
     uint32_t count;
@@ -90,7 +86,7 @@ std::pair<const char **, uint32_t> MacWindow::GetInstanceExtensions() {
 VkResult MacWindow::CreateSurface(const VkInstance &instance,
                                   const VkAllocationCallbacks *allocator,
                                   VkSurfaceKHR *surface) {
-    return glfwCreateWindowSurface(instance, m_window, allocator, surface);
+    return glfwCreateWindowSurface(instance, window, allocator, surface);
 }
 
 }; // namespace Worlds

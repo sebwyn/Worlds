@@ -7,8 +7,8 @@ Application *Application::instance = nullptr;
 
 Application::Application(int argc, char **argv) : argc(argc), argv(argv) {
     instance = this;
-    window = Window::create(WindowProps());
-    window->setEventCallback(W_BIND_EVENT_FN(Application::OnEvent));
+    window = Window::Create(WindowProps());
+    window->SetEventCallback(W_BIND_EVENT_FN(Application::OnEvent));
 
     graphics = CreateScope<Graphics>();
     files = CreateScope<Files>();
@@ -26,8 +26,7 @@ void Application::Close() { running = false; }
 
 void Application::Run() {
     while (running) {
-        window->onUpdate();
-        
+        window->Update();
         graphics->Update();
     }
 }

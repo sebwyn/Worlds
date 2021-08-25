@@ -6,7 +6,6 @@
 extern Worlds::Application *Worlds::CreateApplication(int argc, char** argv);
 
 int main(int argc, char **argv) {
-    Worlds::Log::init();
 
     auto app = Worlds::CreateApplication(argc, argv);
     app->Run();

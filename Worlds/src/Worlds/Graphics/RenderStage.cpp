@@ -1,7 +1,7 @@
 #include "Worlds/Graphics/RenderStage.hpp"
 
-#include "Worlds/Graphics/Graphics.hpp"
 #include "Worlds/Core/Window.hpp"
+#include "Worlds/Graphics/Graphics.hpp"
 
 namespace Worlds {
 
@@ -56,13 +56,16 @@ void RenderStage::Update() {
     renderArea.SetOffset(viewport.GetOffset());
 
     if (viewport.GetSize())
-        renderArea.SetExtent(viewport.GetScale() * glm::vec2(*viewport.GetSize()));
+        renderArea.SetExtent(viewport.GetScale() *
+                             glm::vec2(*viewport.GetSize()));
     else
-        renderArea.SetExtent(viewport.GetScale() * glm::vec2(Window::Get().GetSize()));
+        renderArea.SetExtent(viewport.GetScale() *
+                             glm::vec2(WindowAPI::Get()->GetSize()));
 
     renderArea.SetAspectRatio(static_cast<float>(renderArea.GetExtent().x) /
                               static_cast<float>(renderArea.GetExtent().y));
-    renderArea.SetExtent(glm::ivec2(renderArea.GetExtent()) + renderArea.GetOffset());
+    renderArea.SetExtent(glm::ivec2(renderArea.GetExtent()) +
+                         renderArea.GetOffset());
 
     outOfDate = renderArea != lastRenderArea;
 }
@@ -148,4 +151,4 @@ RenderStage::GetActiveFramebuffer(uint32_t activeSwapchainImage) const {
 
     return framebuffers->GetFramebuffers().at(activeSwapchainImage);
 }
-} // namespace acid
+} // namespace Worlds

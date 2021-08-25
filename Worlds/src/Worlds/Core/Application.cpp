@@ -5,14 +5,56 @@ namespace Worlds {
 
 Application *Application::instance = nullptr;
 
-Application::Application(int argc, char **argv) : argc(argc), argv(argv) {
+Application::Application(int argc, char **argv, ModuleFilter &&moduleFilter)
+    : argc(argc), argv(argv) {
     instance = this;
+    Worlds::Log::init();
+
+    /*
     window = Window::Create(WindowProps());
     window->SetEventCallback(W_BIND_EVENT_FN(Application::OnEvent));
 
     graphics = CreateScope<Graphics>();
     files = CreateScope<Files>();
+    */
+
+    // TODO: Optimize and clean up!
+    std::vector<TypeId> created;
+    for (;;) {
+        bool postponed = false;
+        for (const auto &[moduleId, moduleTest] : Module::Registry()) {
+            if (std::find(created.begin(), created.end(), moduleId) !=
+                created.end())
+                continue;
+            if (!moduleFilter.Check(moduleId))
+                continue;
+            bool this_postponed = false;
+            for (const auto &requireId : moduleTest.requires) {
+                if (!moduleFilter.Check(moduleId))
+                    break;
+                if (std::find(created.begin(), created.end(), requireId) ==
+                    created.end()) {
+                    this_postponed = true;
+                    break;
+                }
+            }
+            if (this_postponed) {
+                postponed = true;
+                continue;
+            }
+            auto &&module = moduleTest.create();
+            modules.emplace(Module::StageIndex(moduleTest.stage, moduleId),
+                            std::move(module));
+            created.emplace_back(moduleId);
+        }
+        if (!postponed)
+            break;
+    }
+
+    WindowAPI::Get()->SetEventCallback(W_BIND_EVENT_FN(Application::OnEvent));
 }
+
+Application::~Application() { Module::Registry().clear(); }
 
 void Application::OnEvent(Event &e) {
     EventDispatcher dispatcher(e);
@@ -26,8 +68,23 @@ void Application::Close() { running = false; }
 
 void Application::Run() {
     while (running) {
-        window->Update();
-        graphics->Update();
+        // TODO: create some structure and don't always update all module stages
+        UpdateStage(Module::Stage::Always);
+
+        UpdateStage(Module::Stage::Pre);
+
+        UpdateStage(Module::Stage::Normal);
+
+        UpdateStage(Module::Stage::Post);
+
+        UpdateStage(Module::Stage::Render);
+    }
+}
+
+void Application::UpdateStage(Module::Stage stage) {
+    for (auto &[stageIndex, module] : modules) {
+        if (stageIndex.first == stage)
+            module->Update();
     }
 }
 
@@ -46,5 +103,4 @@ bool Application::OnWindowClose(WindowCloseEvent &e) {
     return true;
 }
 
-Application::~Application() {}
 }; // namespace Worlds

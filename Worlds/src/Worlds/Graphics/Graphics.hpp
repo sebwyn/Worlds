@@ -8,12 +8,16 @@
 #include "Worlds/Graphics/Commands/CommandPool.hpp"
 #include "Worlds/Graphics/Renderer.hpp"
 
+#include "Worlds/Core/Window.hpp"
+#include "Worlds/Core/Module.hpp"
+
 namespace Worlds {
 /**
  * @brief Module that manages the Vulkan instance, Surface, Window and the
  * renderpass structure.
  */
-class Graphics {
+class Graphics : public Module::Registrar<Graphics> {
+    inline static const bool Registered = Register(Stage::Render, Requires<WindowAPI>());
   public:
     Graphics();
 

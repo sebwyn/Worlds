@@ -16,7 +16,6 @@ MacWindow::MacWindow(const WindowProps &props) { init(props); }
 MacWindow::~MacWindow() { shutdown(); }
 
 void MacWindow::init(const WindowProps &props) {
-
     data.title = props.title;
     data.width = props.width;
     data.height = props.height;
@@ -66,7 +65,9 @@ void MacWindow::shutdown() {
     }
 }
 
-void MacWindow::Update() { glfwPollEvents(); }
+void MacWindow::Update() { 
+    glfwPollEvents(); 
+}
 
 void MacWindow::SetVSync(bool enabled) {
     // TODO: get vsyn working

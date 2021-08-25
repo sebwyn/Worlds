@@ -168,7 +168,7 @@ bool Instance::CheckValidationLayerSupport() const {
 std::vector<const char *> Instance::GetExtensions() const {
     // Sets up the extensions.
     auto [glfwExtensions, glfwExtensionsCount] =
-        Window::Get().GetInstanceExtensions();
+        WindowAPI::Get()->GetInstanceExtensions();
 
     std::vector<const char *> extensions(glfwExtensions,
                                          glfwExtensions + glfwExtensionsCount);

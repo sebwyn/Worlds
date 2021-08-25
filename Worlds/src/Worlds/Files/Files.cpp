@@ -154,7 +154,7 @@ Files::Files() { PHYSFS_init(Application::Get().GetArgv0()); }
 
 Files::~Files() { PHYSFS_deinit(); }
 
-void Files::onUpdate() {}
+void Files::Update() {}
 
 void Files::AddSearchPath(const std::string &path) {
     if (std::find(searchPaths.begin(), searchPaths.end(), path) !=

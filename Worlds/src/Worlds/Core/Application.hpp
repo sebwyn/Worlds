@@ -4,8 +4,10 @@
 #include "Worlds/Events/ApplicationEvent.hpp"
 #include "Worlds/Events/Event.hpp"
 
-#include "Worlds/Graphics/Graphics.hpp"
 #include "Worlds/Files/Files.hpp"
+#include "Worlds/Graphics/Graphics.hpp"
+
+#include "Worlds/Core/Module.hpp"
 
 int main(int argc, char **argv);
 
@@ -13,18 +15,16 @@ namespace Worlds {
 
 class Application {
   public:
-    Application(int argc, char **argv);
-    virtual ~Application();
+    static Application &Get() { return *instance; }
 
-    void OnEvent(Event &e);
+    Application(int argc, char **argv, ModuleFilter &&moduleFilter = {});
+    virtual ~Application();
 
     void Close();
 
-    Window &GetWindow() { return *window; }
-    static Application &Get() { return *instance; }
+    void OnEvent(Event &e);
 
     char *GetArgv0() { return argv[0]; }
-
     bool IsMinimized() { return minimized; }
 
   protected:
@@ -35,17 +35,19 @@ class Application {
     bool OnWindowResize(WindowResizeEvent &e);
     bool OnWindowClose(WindowCloseEvent &e);
 
+    void UpdateStage(Module::Stage stage);
+
   private:
+    static Application *instance;
+
     int argc;
     char **argv;
 
     bool running = true;
     bool minimized = false;
 
-    Scope<Window> window;
-    Scope<Files> files;
+    std::multimap<Module::StageIndex, Scope<Module>> modules;
 
-    static Application *instance;
     friend int ::main(int argc, char **argv);
 };
 

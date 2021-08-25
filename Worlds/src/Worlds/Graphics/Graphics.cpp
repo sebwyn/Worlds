@@ -183,7 +183,7 @@ void Graphics::CaptureScreenshot(const std::filesystem::path &filename) const {
     auto debugStart = Time::Now();
 #endif
 
-    auto size = Window::Get().GetSize();
+    auto size = WindowAPI::Get()->GetSize();
 
     VkImage dstImage;
     VkDeviceMemory dstImageMemory;
@@ -269,13 +269,15 @@ void Graphics::ResetRenderStages() {
 void Graphics::RecreateSwapchain() {
     vkDeviceWaitIdle(*logicalDevice);
 
-    VkExtent2D displayExtent = {Window::Get().GetSize().x,
-                                Window::Get().GetSize().y};
+    VkExtent2D displayExtent = {WindowAPI::Get()->GetSize().x,
+                                WindowAPI::Get()->GetSize().y};
     //#if defined(ACID_DEBUG)
     if (swapchain)
-        W_INFO("Recreating swapchain old (", swapchain->GetExtent().width, ", ",
-               swapchain->GetExtent().height, ") new (", displayExtent.width,
-               ", ", displayExtent.height, ")\n");
+        W_INFO("Recreating swapchain old (" +
+               std::to_string(swapchain->GetExtent().width) + ", " +
+               std::to_string(swapchain->GetExtent().height) + ") new (" +
+               std::to_string(displayExtent.width) + ", " +
+               std::to_string(displayExtent.height) + ")");
     //#endif
     swapchain = std::make_unique<Swapchain>(displayExtent, swapchain.get());
     RecreateCommandBuffers();
@@ -317,8 +319,8 @@ void Graphics::RecreateCommandBuffers() {
 void Graphics::RecreatePass(RenderStage &renderStage) {
     auto graphicsQueue = logicalDevice->GetGraphicsQueue();
 
-    VkExtent2D displayExtent = {Window::Get().GetSize().x,
-                                Window::Get().GetSize().y};
+    VkExtent2D displayExtent = {WindowAPI::Get()->GetSize().x,
+                                WindowAPI::Get()->GetSize().y};
 
     CheckVk(vkQueueWaitIdle(graphicsQueue));
 

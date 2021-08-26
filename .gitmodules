@@ -7,3 +7,6 @@
 [submodule "Worlds/ext/spdlog"]
 	path = Worlds/ext/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "Worlds/ext/entt"]
+	path = Worlds/ext/entt
+	url = https://github.com/skypjack/entt

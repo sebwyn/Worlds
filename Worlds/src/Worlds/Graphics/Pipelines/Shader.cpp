@@ -319,9 +319,9 @@ VkShaderModule Shader::CreateShaderModule(
     // Enable SPIR-V and Vulkan rules when parsing GLSL.
     auto messages = static_cast<EShMessages>(EShMsgSpvRules |
                                              EShMsgVulkanRules | EShMsgDefault);
-#if defined(ACID_DEBUG)
+//#if defined(ACID_DEBUG)
     messages = static_cast<EShMessages>(messages | EShMsgDebugInfo);
-#endif
+//#endif
 
     auto shaderName = moduleName.string();
     auto shaderNameCstr = shaderName.c_str();
@@ -345,14 +345,14 @@ VkShaderModule Shader::CreateShaderModule(
 
     if (!shader.preprocess(&resources, defaultVersion, ENoProfile, false, false,
                            messages, &str, includer)) {
-        W_INFO(shader.getInfoLog(), '\n');
-        W_INFO(shader.getInfoDebugLog(), '\n');
+        W_INFO(std::string(shader.getInfoLog()));
+        W_INFO(std::string(shader.getInfoDebugLog()));
         W_ERROR("SPRIV shader preprocess failed!\n");
     }
 
     if (!shader.parse(&resources, defaultVersion, true, messages, includer)) {
-        W_INFO(shader.getInfoLog(), '\n');
-        W_INFO(shader.getInfoDebugLog(), '\n');
+        W_INFO(std::string(shader.getInfoLog()));
+        W_INFO(std::string(shader.getInfoDebugLog()));
         W_ERROR("SPRIV shader parse failed!\n");
     }
 

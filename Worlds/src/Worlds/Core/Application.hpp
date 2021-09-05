@@ -20,6 +20,11 @@ class Application {
     Application(int argc, char **argv, ModuleFilter &&moduleFilter = {});
     virtual ~Application();
 
+    virtual void OnAppStart() = 0;
+
+    virtual void OnAppEvent(Event &e) = 0;
+    virtual void OnAppUpdate() = 0;
+
     void Close();
 
     void OnEvent(Event &e);

@@ -17,7 +17,7 @@
 
 # A High-Level Overview:
 ### Core:
- - [ ] Window
+ - [X] Window
  - [ ] Scene Renderer
  - [ ] Text Rendering
  - [ ] Input Handling

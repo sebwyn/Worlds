@@ -2,6 +2,7 @@
 #include "wpch.hpp"
 
 #include "Worlds/Events/ApplicationEvent.hpp"
+#include "Worlds/Events/KeyboardEvents.hpp"
 
 namespace Worlds {
 
@@ -53,6 +54,27 @@ void MacWindow::init(const WindowProps &props) {
         data.eventCallback(event);
     });
 
+    glfwSetKeyCallback(window, [](GLFWwindow *window, int key, int scancode,
+                                  int action, int mods) {
+        WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
+
+        if (action == GLFW_PRESS) {
+            KeyPressedEvent event(key, false);
+            data.eventCallback(event);
+            return;
+        } else if (action == GLFW_REPEAT) {
+            KeyPressedEvent event(key, true);
+            data.eventCallback(event);
+            return;
+        } else if (action == GLFW_RELEASE) {
+            KeyReleasedEvent event(key);
+            data.eventCallback(event);
+            return;
+        } else {
+            throw std::runtime_error("Unexpected GLFW Key Action");
+        }
+    });
+
     // TODO: get key and mouse events
 }
 
@@ -65,9 +87,7 @@ void MacWindow::shutdown() {
     }
 }
 
-void MacWindow::Update() { 
-    glfwPollEvents(); 
-}
+void MacWindow::Update() { glfwPollEvents(); }
 
 void MacWindow::SetVSync(bool enabled) {
     // TODO: get vsyn working
@@ -89,5 +109,4 @@ VkResult MacWindow::CreateSurface(const VkInstance &instance,
                                   VkSurfaceKHR *surface) {
     return glfwCreateWindowSurface(instance, window, allocator, surface);
 }
-
 }; // namespace Worlds

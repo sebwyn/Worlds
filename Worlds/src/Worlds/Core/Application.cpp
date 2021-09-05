@@ -57,17 +57,25 @@ Application::Application(int argc, char **argv, ModuleFilter &&moduleFilter)
 Application::~Application() { Module::Registry().clear(); }
 
 void Application::OnEvent(Event &e) {
+    this->OnAppEvent(e);
+
     EventDispatcher dispatcher(e);
     dispatcher.dispatch<WindowResizeEvent>(
         W_BIND_EVENT_FN(Application::OnWindowResize));
     dispatcher.dispatch<WindowCloseEvent>(
         W_BIND_EVENT_FN(Application::OnWindowClose));
+
 }
 
 void Application::Close() { running = false; }
 
 void Application::Run() {
+    
+    this->OnAppStart();
+
     while (running) {
+        this->OnAppUpdate();
+
         // TODO: create some structure and don't always update all module stages
         UpdateStage(Module::Stage::Always);
 

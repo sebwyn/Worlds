@@ -15,6 +15,9 @@ file(GLOB src_files
     src/Worlds/Bitmaps/*.cpp
     src/Worlds/Devices/*.cpp
     src/Worlds/Files/*.cpp
+    src/Worlds/Models/*.cpp
+    src/Worlds/Models/Shapes/*.cpp
+    src/Worlds/Scenes/*.cpp
 
     src/Worlds/Graphics/*.cpp 
     src/Worlds/Graphics/Buffers/*.cpp 
@@ -147,6 +150,7 @@ endif()
 
 add_subdirectory(ext/glm)
 add_subdirectory(ext/spdlog)
+add_subdirectory(ext/entt)
 
 target_include_directories(Worlds 
     PUBLIC 
@@ -157,10 +161,12 @@ target_include_directories(Worlds
     $<$<BOOL:${PHYSFS_INCLUDE_DIR}>:${PHYSFS_INCLUDE_DIR}>
 )
 target_link_libraries(Worlds 
+  PUBLIC
     glm
     spdlog
     ${Vulkan_LIBRARIES} 
     ${OTHER_LDFLAGS}
+    EnTT::EnTT
 
     volk::volk
     glfw

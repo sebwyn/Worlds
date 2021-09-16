@@ -11,7 +11,11 @@ class Camera {
   public:
     Camera() : near(0.1), far(1000), fov(45) {}
 
+    virtual void UpdateCam(){}
+
     void Update() {
+        UpdateCam();
+
         UpdateProjectionMatrix();
         UpdateViewMatrix();
     }

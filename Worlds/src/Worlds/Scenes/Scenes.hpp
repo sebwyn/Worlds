@@ -5,6 +5,8 @@
 
 #include <entt/entt.hpp>
 
+#include "Worlds/Graphics/Graphics.hpp"
+
 namespace Worlds {
 
 class Scene {
@@ -17,22 +19,22 @@ class Scene {
 
     entt::registry *GetRegistry() { return &registry; }
 
-  private:
+  protected:
     Scope<Camera> camera;
 
     entt::registry registry;
 };
 
 class Scenes : public Module::Registrar<Scenes> {
-    inline static const bool Registered = Register(Stage::Normal);
+    inline static const bool Registered = Register(Stage::Normal, Requires<Graphics>());
 
   public:
     Scenes() = default;
 
     void Update() override {
-        if(scene){
+        if (scene) {
             GetCamera()->Update();
-        } 
+        }
     }
 
     Scene *GetScene() { return scene.get(); }

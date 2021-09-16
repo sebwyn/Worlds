@@ -18,6 +18,8 @@ file(GLOB src_files
     src/Worlds/Models/*.cpp
     src/Worlds/Models/Shapes/*.cpp
     src/Worlds/Scenes/*.cpp
+    src/Worlds/Meshes/*.cpp
+    src/Worlds/Maths/*.cpp
 
     src/Worlds/Graphics/*.cpp 
     src/Worlds/Graphics/Buffers/*.cpp 

@@ -10,14 +10,6 @@ Application::Application(int argc, char **argv, ModuleFilter &&moduleFilter)
     instance = this;
     Worlds::Log::init();
 
-    /*
-    window = Window::Create(WindowProps());
-    window->SetEventCallback(W_BIND_EVENT_FN(Application::OnEvent));
-
-    graphics = CreateScope<Graphics>();
-    files = CreateScope<Files>();
-    */
-
     // TODO: Optimize and clean up!
     std::vector<TypeId> created;
     for (;;) {
@@ -65,12 +57,15 @@ void Application::OnEvent(Event &e) {
     dispatcher.dispatch<WindowCloseEvent>(
         W_BIND_EVENT_FN(Application::OnWindowClose));
 
+    for (auto &[stage, module] : modules) {
+        module->OnEvent(e);
+    }
 }
 
 void Application::Close() { running = false; }
 
 void Application::Run() {
-    
+
     this->OnAppStart();
 
     while (running) {

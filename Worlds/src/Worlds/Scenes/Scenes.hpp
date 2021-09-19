@@ -26,7 +26,8 @@ class Scene {
 };
 
 class Scenes : public Module::Registrar<Scenes> {
-    inline static const bool Registered = Register(Stage::Normal, Requires<Graphics>());
+    inline static const bool Registered =
+        Register(Stage::Normal, Requires<Graphics>());
 
   public:
     Scenes() = default;
@@ -35,6 +36,13 @@ class Scenes : public Module::Registrar<Scenes> {
         if (scene) {
             GetCamera()->Update();
         }
+    }
+
+    bool OnEvent(Event &e) override {
+        if (scene) {
+            GetCamera()->OnEvent(e);
+        }
+        return false;
     }
 
     Scene *GetScene() { return scene.get(); }

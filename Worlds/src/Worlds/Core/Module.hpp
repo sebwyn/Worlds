@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "Worlds/Utils/TypeInfo.hpp"
+#include "Worlds/Events/Event.hpp"
 
 namespace Worlds {
 template <typename Base> class ModuleFactory {
@@ -84,6 +85,7 @@ class Module : public ModuleFactory<Module> {
      * The update function for the module.
      */
     virtual void Update() = 0;
+    virtual bool OnEvent(Event &e) { return false; }
 };
 
 template class TypeInfo<Module>;

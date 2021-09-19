@@ -11,7 +11,8 @@ class Camera {
   public:
     Camera() : near(0.1), far(1000), fov(45) {}
 
-    virtual void UpdateCam(){}
+    virtual void UpdateCam() {}
+    virtual bool OnEvent(Event &e) { return false; }
 
     void Update() {
         UpdateCam();

@@ -210,6 +210,10 @@ std::optional<std::string> Files::Read(const std::filesystem::path &path) {
     std::replace(pathStr.begin(), pathStr.end(), '\\', '/');
     auto fsFile = PHYSFS_openRead(pathStr.c_str());
 
+    for(char** i = PHYSFS_getSearchPath(); *i != NULL; i++){
+        W_INFO("physfs search path: " + std::string(*i));
+    }
+
     if (!fsFile) {
         if (!std::filesystem::exists(path) ||
             !std::filesystem::is_regular_file(path)) {

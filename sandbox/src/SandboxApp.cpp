@@ -1,4 +1,5 @@
 #include "Worlds.hpp"
+
 #include "Worlds/Core/EntryPoint.hpp"
 #include "Worlds/Scenes/Scenes.hpp"
 
@@ -6,6 +7,7 @@
 
 #include "SandboxRenderer.hpp"
 #include "SandboxScene.hpp"
+#include "SandboxCamera.hpp"
 
 #include "Worlds/Events/KeyboardEvents.hpp"
 
@@ -28,7 +30,7 @@ class Sandbox : public Worlds::Application {
 
   private:
     bool OnKeyPressed(KeyPressedEvent &e) {
-        if (e.getKey() == GLFW_KEY_W) {
+        /*if (e.getKey() == GLFW_KEY_W) {
             glm::vec3 oldPos = Scenes::Get()->GetCamera()->GetPosition();
             Scenes::Get()->GetCamera()->SetPosition(oldPos +
                                                     glm::vec3(0, 0, -0.1));
@@ -46,6 +48,7 @@ class Sandbox : public Worlds::Application {
                                                     glm::vec3(0.1, 0, 0));
         }
         return false;
+        */
     }
 };
 

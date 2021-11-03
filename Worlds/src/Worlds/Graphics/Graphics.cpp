@@ -11,7 +11,7 @@ namespace Worlds {
 Graphics *Graphics::s_instance;
 
 Graphics::Graphics()
-    : /*elapsedPurge(5s), */ instance(std::make_unique<Instance>()),
+    : instance(std::make_unique<Instance>()),
       physicalDevice(std::make_unique<PhysicalDevice>(instance.get())),
       surface(std::make_unique<Surface>(instance.get(), physicalDevice.get())),
       logicalDevice(std::make_unique<LogicalDevice>(

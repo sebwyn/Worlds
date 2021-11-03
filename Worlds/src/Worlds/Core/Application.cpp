@@ -10,6 +10,8 @@ Application::Application(int argc, char **argv, ModuleFilter &&moduleFilter)
     instance = this;
     Worlds::Log::init();
 
+    W_INFO("Argv 0:" + std::string(GetArgv0())); 
+
     // TODO: Optimize and clean up!
     std::vector<TypeId> created;
     for (;;) {

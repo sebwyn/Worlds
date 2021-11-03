@@ -3,6 +3,7 @@
 
 #include "Worlds/Events/ApplicationEvent.hpp"
 #include "Worlds/Events/KeyboardEvents.hpp"
+#include "Worlds/Events/MouseEvents.hpp"
 
 namespace Worlds {
 
@@ -75,7 +76,16 @@ void MacWindow::init(const WindowProps &props) {
         }
     });
 
-    // TODO: get key and mouse events
+    glfwSetCursorPosCallback(
+        window, [](GLFWwindow *window, double xpos, double ypos) {
+            WindowData &data = *(WindowData *)glfwGetWindowUserPointer(window);
+
+            MouseMovedEvent event(xpos, ypos);
+
+            data.eventCallback(event);
+        });
+
+    DisableCursor();
 }
 
 void MacWindow::shutdown() {
@@ -87,7 +97,12 @@ void MacWindow::shutdown() {
     }
 }
 
-void MacWindow::Update() { glfwPollEvents(); }
+void MacWindow::Update() {
+    glfwWaitEventsTimeout(0.016);
+    glfwPollEvents();
+    if (!data.cursorEnabled)
+        glfwSetCursorPos(window, data.width / 2., data.height / 2.);
+}
 
 void MacWindow::SetVSync(bool enabled) {
     // TODO: get vsyn working
@@ -108,5 +123,19 @@ VkResult MacWindow::CreateSurface(const VkInstance &instance,
                                   const VkAllocationCallbacks *allocator,
                                   VkSurfaceKHR *surface) {
     return glfwCreateWindowSurface(instance, window, allocator, surface);
+}
+
+
+void MacWindow::DisableCursor(){
+    data.cursorEnabled = false;
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    if (glfwRawMouseMotionSupported())
+    glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+}
+
+void MacWindow::EnableCursor(){
+    data.cursorEnabled = true;
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_FALSE);
 }
 }; // namespace Worlds

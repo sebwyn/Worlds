@@ -5,6 +5,8 @@
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/string_cast.hpp>
 
+#include <iostream>
+
 namespace Worlds {
 
 class Camera {
@@ -42,23 +44,25 @@ class Camera {
   protected:
     void UpdateProjectionMatrix() {
         glm::uvec2 window = WindowAPI::Get()->GetSize();
+
         projection =
             glm::perspective(fov, (float)window.x / window.y, near, far);
     }
     void UpdateViewMatrix() {
         // get look vector from rotation
         glm::mat4 rotationMatrix = glm::mat4_cast(glm::quat(rotation));
-        glm::vec3 look = glm::vec3(rotationMatrix * glm::vec4(0, 0, -1, 0));
+        glm::vec3 look = glm::vec3(rotationMatrix * glm::vec4(0, 0, 1, 0));
+        //std::cout << "look: " << to_string(look) << "position: " << to_string(position) << std::endl;
         // use look vector to calculate view
-        view = glm::lookAt(position, position + look, glm::vec3(0, 1, 0));
+        view = glm::lookAt(position, position + look, glm::vec3(0, -1, 0));
     }
 
   protected:
     float near, far;
     float fov;
 
-    glm::vec3 position;
-    glm::vec3 rotation;
+    glm::vec3 position = glm::vec3(0);
+    glm::vec3 rotation = glm::vec3(0);
 
     glm::mat4 view, projection;
 };

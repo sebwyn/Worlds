@@ -23,6 +23,9 @@ class MacWindow : public Window {
     void SetVSync(bool enabled) override;
     bool IsVSync() const override;
 
+    void EnableCursor();
+    void DisableCursor();
+
     void *GetNativeWindow() override { return window; }
 
     std::pair<const char **, uint32_t> GetInstanceExtensions() override;
@@ -41,6 +44,7 @@ class MacWindow : public Window {
         std::string title;
         uint32_t width, height;
         bool vsync;
+        bool cursorEnabled;
 
         EventCallbackFn eventCallback;
     };

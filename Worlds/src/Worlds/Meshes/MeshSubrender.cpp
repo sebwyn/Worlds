@@ -26,26 +26,14 @@ void MeshSubrender::Render(const CommandBuffer &commandBuffer) {
 
     uniformScene.Push("projection", camera->GetProjectionMatrix());
     uniformScene.Push("view", camera->GetViewMatrix());
-    descriptors.Push("UniformScene", uniformScene);
 
     auto view = Scenes::Get()->GetRegistry()->view<Transform, Mesh>();
-
     for (auto entity : view) {
         auto &transform = view.get<Transform>(entity);
         auto &mesh = view.get<Mesh>(entity);
 
         transform.UpdateMatrix();
-
-        uniformObject.Push("transform", transform.GetMatrix());
-        uniformObject.Push("color", glm::vec4(1.0));
-        descriptors.Push("UniformObject", uniformObject);
-
-        if (!descriptors.Update(coloredPipeline))
-            return;
-
-        descriptors.BindDescriptor(commandBuffer, coloredPipeline);
-
-        mesh.CmdRender(commandBuffer);
+        mesh.CmdRender(commandBuffer, coloredPipeline, uniformScene, transform.GetMatrix());
     }
 }
 

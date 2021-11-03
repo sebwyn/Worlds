@@ -7,7 +7,6 @@ layout(binding = 0) uniform UniformScene {
 
 layout(binding = 1) uniform UniformObject {
   mat4 transform;
-
   vec4 color;
 } object;
 

@@ -18,9 +18,7 @@ class MeshSubrender : public Subrender {
     // Order is important: the pipeline will be freed after the descriptors
     PipelineGraphics coloredPipeline;
 
-    DescriptorsHandler descriptors;
     UniformHandler uniformScene;
-    UniformHandler uniformObject;
 };
 
 } // namespace Worlds

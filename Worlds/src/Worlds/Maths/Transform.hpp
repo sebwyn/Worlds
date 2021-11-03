@@ -10,13 +10,13 @@ class Transform {
     Transform() = default;
 
     glm::vec3 GetPosition() { return position; }
-    void SetPosition(glm::vec3 &position) { this->position = position; }
+    void SetPosition(glm::vec3 &&position) { this->position = position; }
 
     glm::vec3 GetRotation() { return rotation; }
-    void SetRotation(glm::vec3 &rotation) { this->rotation = rotation; }
+    void SetRotation(glm::vec3 &&rotation) { this->rotation = rotation; }
 
     glm::vec3 GetScale() { return scale; }
-    void SetScale(glm::vec3 &scale) { this->scale = scale; }
+    void SetScale(glm::vec3 &&scale) { this->scale = scale; }
 
     void UpdateMatrix() {
         glm::mat4 transMat = glm::translate(glm::mat4(1.0), position);

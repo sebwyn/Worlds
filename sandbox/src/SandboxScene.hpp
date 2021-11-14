@@ -20,18 +20,14 @@ class SandboxScene : public Worlds::Scene {
         SetCamera(std::make_unique<Worlds::SandboxCamera>());
         camera->SetPosition(glm::vec3(0, 0, -10));
 
-        auto cube = registry.create();
-        registry.emplace<Worlds::Transform>(cube);
-        registry.emplace<Worlds::Mesh>(
-            cube, Worlds::CreateScope<Worlds::Cube>(glm::vec3(1.0)));
-        
+        for (int x = 0; x < 10; x++) {
+            auto cube = registry.create();
+            auto &transform = registry.emplace<Worlds::Transform>(cube);
+            registry.emplace<Worlds::Mesh>(
+                cube, Worlds::CreateScope<Worlds::Cube>(glm::vec3(1.0)));
 
-        auto cube2 = registry.create();
-        auto& cube2t = registry.emplace<Worlds::Transform>(cube2);
-        registry.emplace<Worlds::Mesh>(
-            cube2, Worlds::CreateScope<Worlds::Cube>(glm::vec3(1.0)));
-
-        cube2t.SetPosition(glm::vec3(0, 2, 0));
+            transform.SetPosition(glm::vec3(0, x * 2, 0));
+        }
     }
 
   private:

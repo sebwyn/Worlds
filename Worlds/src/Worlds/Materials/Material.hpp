@@ -7,7 +7,7 @@ namespace Worlds {
 class Material {
   public:
   private:
-    std::Ref<MaterialPipeline> pipelineMaterial;
+    Ref<MaterialPipeline> pipelineMaterial;
 };
 
-}
+} // namespace Worlds
